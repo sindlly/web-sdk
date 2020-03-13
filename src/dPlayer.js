@@ -5,6 +5,7 @@ import HlsJsPlayer from 'xgplayer-hls.js';
 class PlayerSDK {
     constructor(options) {
         this.options = options
+        this.initPlayer()
     }
     initPlayer(){
         // this.prototype =null
@@ -13,17 +14,14 @@ class PlayerSDK {
         } else {
             this.prototype = new HlsJsPlayer(this.options)
         }
-        this.Events("PLAYER_INIT", () => {
-            console.log(this)
-        })
     }
     Events(event, fn) {
         switch (event) {
             case "PLAYER_INIT":
                 this.prototype.on('ready', () => {
                     console.log('PLAYER_INIT')
-                    console.log(this.prototype.video)
-                    fn()
+                    //console.log(this.prototype.video)   //对应vidoe标签，不晓得后面有什么用
+                    if(fn) fn()
                 });
                 break;
             case "PLAYER_PLAY":
@@ -41,6 +39,11 @@ class PlayerSDK {
                     fn()
                 })
                 break;
+            case "destroy":
+                this.prototype.on('destroy', () => {
+                    fn()
+                })
+                break;
         }
     }
     play(){
@@ -48,8 +51,9 @@ class PlayerSDK {
     }
     pause(){
         this.prototype.pause()
+
     }
-    switchPlayType(type, url) {
+    switchPlayType(type,url,fn) {
         this.prototype.destroy()
         this.prototype.once('destroy',()=>{
             this.options.url = url
@@ -59,6 +63,10 @@ class PlayerSDK {
                 this.options.isLive = false
             }
             this.initPlayer()
+            this.prototype.on('play', () => {
+                console.log("newPlay")
+            })
+            if(fn) return fn()
         })
 
     }

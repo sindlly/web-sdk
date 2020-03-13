@@ -6,7 +6,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: 'Output Management'
+            template: "./src/index.html"
         })
     ],
     devtool: 'inline-source-map',
