@@ -1,5 +1,5 @@
 import  PlayerSDK from "./playerSDK.min";
-
+// import  PlayerSDK from "./dPlayer";
 let hlsUrl = 'https://v-test.cmcconenet.com:8443/vod/33713/33875316_1/33875316115839424033791583942488052.m3u8?token=kh8P1qywY7oEiLxi8osRYvYMK063KDpzWP8V2U0cdUOhIw2y9o8tXvtvO3BIVYW7RKGjskmKTaFKVfuTpa1WRgsNROlYQnFi4CL9mUi0_ZRWjpR58uStkdq9R3JzjpoQ'
 let flvUrl = 'https://v-test.cmcconenet.com:8443/live/live_33098500_1.flv?token=eyJrZXkiOjcsInNpZ24iOiJMLU1keVkySWJLdUZVMlViNEs3MTRENmlLQlhhWXhxYk9YZ2trTWN2MElGZGNvTm1OOUxoek8yVFIzRUx4R3U2QXoxR3pyd3U0Q0M4ZjFyRFN2RGtDMlN2YU1ySS1JbWRJZ3FIOG5OREdEVkZhNnJCMGoySTFUeEg2MkNUSWh5cWZGQV9LSUlyVTJnOWFmcnZGZXFZZTFZT3BVcWpKbERnRXdhaWszdVhiSVl6OEo1Tks1amo2NEFhQl8tR05XX0YifQ'
 console.log(PlayerSDK)

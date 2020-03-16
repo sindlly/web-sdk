@@ -15,6 +15,7 @@ module.exports = {
       },
     output: {
         filename: 'playerSDK.min.js',
+        libraryTarget: 'umd',
         path: path.resolve(__dirname, 'dist')
     }
 };
