@@ -1,18 +1,16 @@
-import _ from 'lodash';
-import { PlayerSDK } from "./dPlayer";
+import  PlayerSDK from "./playerSDK.min";
 
 let hlsUrl = 'https://v-test.cmcconenet.com:8443/vod/33713/33875316_1/33875316115839424033791583942488052.m3u8?token=kh8P1qywY7oEiLxi8osRYvYMK063KDpzWP8V2U0cdUOhIw2y9o8tXvtvO3BIVYW7RKGjskmKTaFKVfuTpa1WRgsNROlYQnFi4CL9mUi0_ZRWjpR58uStkdq9R3JzjpoQ'
-let flvUrl = 'https://v-test.cmcconenet.com:8443/live/live_25096185_1.flv?token=eyJrZXkiOjAsInNpZ24iOiJFZ2FSYjhpdC1mMW5EbHJxb19WQWdSQTRVU2k5OF9ZWkVfYmpyT0JwS1FCWGs2MzRvRUdIcDlFSTdvVVE0cFl2TFR2cVI5S2hCeTEwMFMwSE50Skg2WEhsanpYZ1N3M0ZVTGV0bkxwanAzUm9sang5VEYzaWZURFR6dGE5OHphQ0ZxRjE4aWdWenlTNDlHbHViUUhZbkxxSTBUYnF6c3ZGVWs5dHNfY0JxWU1FZHE2ekR5UjZ5am53cmlReFF0MEUifQ'
+let flvUrl = 'https://v-test.cmcconenet.com:8443/live/live_33098500_1.flv?token=eyJrZXkiOjcsInNpZ24iOiJMLU1keVkySWJLdUZVMlViNEs3MTRENmlLQlhhWXhxYk9YZ2trTWN2MElGZGNvTm1OOUxoek8yVFIzRUx4R3U2QXoxR3pyd3U0Q0M4ZjFyRFN2RGtDMlN2YU1ySS1JbWRJZ3FIOG5OREdEVkZhNnJCMGoySTFUeEg2MkNUSWh5cWZGQV9LSUlyVTJnOWFmcnZGZXFZZTFZT3BVcWpKbERnRXdhaWszdVhiSVl6OEo1Tks1amo2NEFhQl8tR05XX0YifQ'
+console.log(PlayerSDK)
 let player = new PlayerSDK({
     id: 'mse',
     cors:true,
-    isLive:true,
-    autoplay:true,
     url:flvUrl
 });
 window.PlayerSDK = player
 document.getElementById("play-btn").onclick = ()=>{
-    player.play()
+    player.playLive()
 }
 document.getElementById("pause-btn").onclick = ()=>{
     player.pause()
@@ -28,6 +26,12 @@ document.getElementById("playHls-btn").onclick = ()=>{
         console.log("switch")
     })
 }
+document.getElementById("replayFlv-btn").onclick = ()=>{
+    player.resume()
+}
+document.getElementById("stop-btn").onclick = ()=>{
+    player.stop()
+}
 
 console.log(player)
 player.Events("PLAYER_INIT",()=>{
@@ -41,4 +45,10 @@ player.Events("PLAYER_PAUSE",()=>{
 })
 player.Events("PLAYER_PLAY_LOADING",()=>{
     console.log("PLAYER_PLAY_LOADING")
+})
+player.Events("PLAYER_INIT_ERROR",()=>{
+    console.log("PLAYER_INIT_ERROR")
+})
+player.Events("PLAYER_STOP",()=>{
+    console.log("PLAYER_STOP")
 })

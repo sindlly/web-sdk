@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
-    entry: './src/index.js',
+    entry: './src/dPlayer.js',
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
@@ -14,7 +14,7 @@ module.exports = {
         contentBase: './dist'
       },
     output: {
-        filename: '[name].bundle.js',
+        filename: 'playerSDK.min.js',
         path: path.resolve(__dirname, 'dist')
     }
 };
