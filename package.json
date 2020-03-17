@@ -1,9 +1,8 @@
 {
-  "name": "web-sdk",
-  "version": "1.0.0",
-  "description": "",
-  "private": true,
-  "main": "index.js",
+  "name": "cmiot-playersdk",
+  "version": "0.0.1",
+  "description": "sindlly`s npm",
+  "main": "PlayerSDK.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
@@ -20,6 +19,10 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
+    "@babel/polyfill": "^7.8.7",
+    "@babel/runtime": "^7.8.7",
+    "@babel/runtime-corejs2": "^7.8.7",
     "lodash": "^4.17.15",
     "xgplayer": "^2.5.5",
     "xgplayer-flv": "^2.2.0-beta.0",

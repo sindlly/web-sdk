@@ -1,6 +1,6 @@
 import "xgplayer";
 import FlvPlayer from 'xgplayer-flv.js';
-import HlsJsPlayer from 'xgplayer-hls.js';
+// import HlsJsPlayer from 'xgplayer-hls.js';
 
 class PlayerSDK {
     constructor(options) {
@@ -17,7 +17,7 @@ class PlayerSDK {
         if (this.options.isLive) {
             this.prototype = new FlvPlayer(this.options)
         } else {
-            this.prototype = new HlsJsPlayer(this.options)
+            // this.prototype = new HlsJsPlayer(this.options)
         }
     }
     Events(event, fn) {
@@ -30,8 +30,7 @@ class PlayerSDK {
                 break;
             case "PLAYER_INIT_ERROR":
                 this.prototype.on('error', (err) => {
-                    console.log(err)
-                    if(fn) fn()
+                    if(fn) fn(err)
                 });
                 break;
             case "PLAYER_CAN_PLAY":
@@ -95,11 +94,15 @@ class PlayerSDK {
         }
         this.isStoped = false
     }
+    switchLive(url){
+        this.options.url = url
+        this.prototype.switchURL(this.options.url)
+    }
     setVolume(val){
         this.prototype.volume = val
     }
-    destroy(blean){
-        if(blean == false) this.prototype.destroy(false)
+    destroy(boolean){
+        if(boolean == false) this.prototype.destroy(false)
         else this.prototype.destroy()
     }
     switchPlayType(type,url,fn) {
@@ -121,6 +124,4 @@ class PlayerSDK {
     }
 
 }
-
-
 export default PlayerSDK
