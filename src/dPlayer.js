@@ -16,6 +16,10 @@ class PlayerSDK {
     initPlayer(){
         if (this.options.isLive) {
             this.prototype = new FlvPlayer(this.options)
+            this.Events("PLAYER_INIT",()=>{
+                this.Events("PLAYER_PLAYING")
+                this.Events("PLAYER_PLAY_LOADING")
+            })
         } else {
             // this.prototype = new HlsJsPlayer(this.options)
         }
@@ -40,29 +44,45 @@ class PlayerSDK {
                 break;
             case "PLAYER_PLAY":
                 this.prototype.on('play', () => {
-                    fn()
+                    if(fn) fn()
                 })
                 break;
             case "PLAYER_PAUSE":
                 this.prototype.on('pause', () => {
-                    fn()
+                    if(fn) fn()
                 })
                 break;
             case "PLAYER_PLAY_LOADING":
                 this.prototype.on('waiting', () => {
-                    fn()
+                    document.getElementsByClassName("xgplayer-enter")[0].style.cssText="display: block !important"
+                    document.getElementsByClassName("xgplayer-enter")[0].style.background="none"
+                    document.getElementsByClassName("xgplayer-loading")[0].style.display="none"
+                    if(fn) fn()
                 })
                 break;
             case "destroy":
                 this.prototype.on('destroy', () => {
-                    fn()
+                    if(fn) fn()
                 })
                 break;
             case "PLAYER_STOP":
                 this.prototype.on('ended', () => {
-                    fn()
+                    if(fn) fn()
                 })
                 break;
+            case "PLAYER_PLAYING":
+                this.prototype.on('playing', () => {
+                    document.getElementsByClassName("xgplayer-enter")[0].style.display="none"
+                    if(fn) fn()
+                })
+                break;
+            case "timeupdate":
+                this.prototype.on('timeupdate', () => {
+                    if(fn) fn()
+                })
+                break;
+
+
         }
     }
     playLive(){
@@ -85,6 +105,7 @@ class PlayerSDK {
         this.isStoped = true
     }
     resume(){
+        document.getElementsByClassName("xgplayer-enter")[0].style.cssText="display: block !important"
         if(this.isStoped){
             //如果是停止播放，恢复播放需要重新加载
             this.initPlayer()
@@ -95,6 +116,7 @@ class PlayerSDK {
         this.isStoped = false
     }
     switchLive(url){
+        document.getElementsByClassName("xgplayer-enter")[0].style.cssText="display: block !important"
         this.options.url = url
         this.prototype.switchURL(this.options.url)
     }
@@ -106,6 +128,7 @@ class PlayerSDK {
         else this.prototype.destroy()
     }
     switchPlayType(type,url,fn) {
+        document.getElementsByClassName("xgplayer-enter")[0].style.display="block"
         this.prototype.destroy()
         this.prototype.once('destroy',()=>{
             this.options.url = url
