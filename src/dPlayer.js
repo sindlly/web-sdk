@@ -1,6 +1,6 @@
 import "xgplayer";
 import FlvPlayer from 'xgplayer-flv.js';
-// import HlsJsPlayer from 'xgplayer-hls.js';
+import HlsJsPlayer from 'xgplayer-hls.js';
 
 class PlayerSDK {
     constructor(options) {
@@ -8,7 +8,8 @@ class PlayerSDK {
             //这里设置默认值
             autoplay:true,
             isLive:true,
-            isStoped:false
+            isStoped:false,
+            controls: false
         }
         this.options = Object.assign(this.options,options)   // 如果options中有默认的字段，则会覆盖this.options中字段的值
         this.initPlayer()
@@ -21,7 +22,7 @@ class PlayerSDK {
                 this.Events("PLAYER_PLAY_LOADING")
             })
         } else {
-            // this.prototype = new HlsJsPlayer(this.options)
+            this.prototype = new HlsJsPlayer(this.options)
         }
     }
     Events(event, fn) {
@@ -76,7 +77,7 @@ class PlayerSDK {
                     if(fn) fn()
                 })
                 break;
-            case "timeupdate":
+            case "PLAYER_TIME_CHANGE ":
                 this.prototype.on('timeupdate', () => {
                     if(fn) fn()
                 })
@@ -104,6 +105,7 @@ class PlayerSDK {
         document.getElementById(this.options.id).style.background = "black"
         this.isStoped = true
     }
+    //恢复播放
     resume(){
         document.getElementsByClassName("xgplayer-enter")[0].style.cssText="display: block !important"
         if(this.isStoped){
@@ -126,6 +128,14 @@ class PlayerSDK {
     destroy(boolean){
         if(boolean == false) this.prototype.destroy(false)
         else this.prototype.destroy()
+    }
+    //进入全屏
+    getCssFullscreen(){
+        this.prototype.getCssFullscreen()
+    }
+    //退出全屏
+    exitCssFullscreen(){
+        this.prototype.exitCssFullscreen()
     }
     switchPlayType(type,url,fn) {
         document.getElementsByClassName("xgplayer-enter")[0].style.display="block"

@@ -21,6 +21,8 @@
  * 播放暂停  player.pause()
  * 恢复播放  player.resume()
  * 停止播放  player.stop()
+ * 进入全屏  player.getCssFullscreen()
+ * 退出全屏  player.exitCssFullscreen()
  * 切换直播源 player.switchLive(newUrl) 
  * 销毁播发器 player.destroy(boolean) // true 删除内部DOM元素 | false 保留内部DOM元素，默认为true
 
@@ -30,6 +32,7 @@
 * 视频加载过程触发 PLAYER_PLAY_LOADING
 * 开始播放 PLAYER_PLAY 
 * 播放暂停 PLAYER_PAUSE
+* 当前播放时间变化时触发 PLAYER_TIME_CHANGE 
 * 实例：
 >```
 >    player.Events("PLAYER_INIT",()=>{
