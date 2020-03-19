@@ -9,7 +9,15 @@ class PlayerSDK {
             autoplay:true,
             isLive:true,
             isStoped:false,
-            controls: false
+            controls: false,
+            fluid:true,
+            closeVideoClick: true,
+            closeVideoDblclick: true,
+            closeVideoTouch: true,
+            closePlayerBlur: true,
+            closeControlsBlur: true,
+            closeFocusVideoFocus: true,
+            closePlayVideoFocus: true,
         }
         this.options = Object.assign(this.options,options)   // 如果options中有默认的字段，则会覆盖this.options中字段的值
         this.initPlayer()
@@ -28,8 +36,18 @@ class PlayerSDK {
     Events(event, fn) {
         switch (event) {
             case "PLAYER_INIT":
-                this.prototype.on('ready', () => {
+                this.prototype.on('complete', () => {
                     //console.log(this.prototype.video)   //对应vidoe标签，不晓得后面有什么用
+                    if(document.getElementsByClassName("xgplayer-enter")[0]!= undefined)
+                        document.getElementsByClassName("xgplayer-enter")[0].remove()
+                    if(document.getElementsByClassName("xgplayer-start")[0]!= undefined)
+                        document.getElementsByClassName("xgplayer-start")[0].remove()
+                    if(document.getElementsByClassName("xgplayer-loading")[0]!= undefined)
+                        document.getElementsByClassName("xgplayer-loading")[0].remove()
+                    if(document.getElementsByClassName("xgplayer-replay")[0]!= undefined)
+                        document.getElementsByClassName("xgplayer-replay")[0].remove()
+                    if(document.getElementsByClassName("xgplayer-error")[0]!= undefined)
+                        document.getElementsByClassName("xgplayer-error")[0].remove()
                     if(fn) fn()
                 });
                 break;
@@ -44,7 +62,7 @@ class PlayerSDK {
                 });
                 break;
             case "PLAYER_PLAY":
-                this.prototype.on('play', () => {
+                this.prototype.on('playing', () => {
                     if(fn) fn()
                 })
                 break;
@@ -55,9 +73,7 @@ class PlayerSDK {
                 break;
             case "PLAYER_PLAY_LOADING":
                 this.prototype.on('waiting', () => {
-                    document.getElementsByClassName("xgplayer-enter")[0].style.cssText="display: block !important"
-                    document.getElementsByClassName("xgplayer-enter")[0].style.background="none"
-                    document.getElementsByClassName("xgplayer-loading")[0].style.display="none"
+                    console.log("LOADING")
                     if(fn) fn()
                 })
                 break;
@@ -71,19 +87,11 @@ class PlayerSDK {
                     if(fn) fn()
                 })
                 break;
-            case "PLAYER_PLAYING":
-                this.prototype.on('playing', () => {
-                    document.getElementsByClassName("xgplayer-enter")[0].style.display="none"
-                    if(fn) fn()
-                })
-                break;
             case "PLAYER_TIME_CHANGE ":
                 this.prototype.on('timeupdate', () => {
                     if(fn) fn()
                 })
                 break;
-
-
         }
     }
     playLive(){
@@ -107,13 +115,13 @@ class PlayerSDK {
     }
     //恢复播放
     resume(){
-        document.getElementsByClassName("xgplayer-enter")[0].style.cssText="display: block !important"
         if(this.isStoped){
             //如果是停止播放，恢复播放需要重新加载
             this.initPlayer()
         }else{
             //暂停后恢复播放
             this.prototype.switchURL(this.options.url)
+            this.prototype.emit('waiting')
         }
         this.isStoped = false
     }
