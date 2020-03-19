@@ -9,7 +9,7 @@ module.exports = {
             template: "./src/index.html"
         })
     ],
-    devtool: 'inline-source-map',
+    devtool: process.env.NODE_ENV === 'dev'?'inline-source-map':'none',
     devServer: {
         contentBase: './dist'
       },

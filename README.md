@@ -31,6 +31,7 @@
 * 播放器缓存了资源可播放时触发 PLAYER_CAN_PLAY 
 * 视频加载过程触发 PLAYER_PLAY_LOADING
 * 开始播放 PLAYER_PLAY 
+* 持续播放 PLAYER_PLAYING
 * 播放暂停 PLAYER_PAUSE
 * 当前播放时间变化时触发 PLAYER_TIME_CHANGE 
 * 实例：
