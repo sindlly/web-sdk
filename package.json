@@ -25,6 +25,7 @@
     "@babel/runtime": "^7.8.7",
     "@babel/runtime-corejs2": "^7.8.7",
     "lodash": "^4.17.15",
+    "uupaa.aac.js": "^0.4.3",
     "xgplayer": "^2.5.5",
     "xgplayer-flv": "^2.2.0-beta.0",
     "xgplayer-flv.js": "^2.1.1",
