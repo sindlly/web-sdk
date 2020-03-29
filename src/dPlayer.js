@@ -18,20 +18,12 @@ class PlayerSDK {
             closeControlsBlur: true,
             closeFocusVideoFocus: true,
             closePlayVideoFocus: true,
-            channel_id: "",
-            device_id: "",
-            product_id: "",
-            video_id:'',
-            play_type: 2,
             socketServer:'' //获取token的 ws服务端地址
         }
         this.mediaRecorder = null
         this.chunks = [];   //存放音频
         this.options = Object.assign(this.options,options)   // 如果options中有默认的字段，则会覆盖this.options中字段的值
         this.obj = {};
-        this.$on("playHls",()=>{
-            console.log("playHls")
-        })
         this.initPlayer()
         this.WS = null
         this.connectServer()
@@ -43,8 +35,10 @@ class PlayerSDK {
                 this.Events("PLAYER_PLAYING")
                 this.Events("PLAYER_PLAY_LOADING")
             })
+            this.options.isLive = true
         } else {
             this.prototype = new HlsJsPlayer(this.options)
+            this.options.isLive = false
         }
     }
     Events(event, fn) {
@@ -105,6 +99,10 @@ class PlayerSDK {
                     if(fn) fn()
                 })
                 break;
+            case "REVIEW_END":
+                this.$on("REVIEW_END",()=>{
+                    if(fn) fn()
+                })
         }
     }
     playLive(){
@@ -125,15 +123,25 @@ class PlayerSDK {
         this.isStoped = true
     }
     resume(){
-        if(this.isStoped){
-            //如果是停止播放，恢复播放需要重新加载
-            this.initPlayer()
+        if(this.options.isLive == true){
+            if(this.isStoped){
+                //如果是停止播放，恢复播放需要重新加载
+                this.initPlayer()
+            }else{
+                //暂停后恢复播放
+                this.prototype.switchURL(this.options.url)
+                this.prototype.emit('waiting')
+            }
+            this.isStoped = false
         }else{
-            //暂停后恢复播放
-            this.prototype.switchURL(this.options.url)
-            this.prototype.emit('waiting')
+            //由回播恢复到直播
+            this.prototype.destroy()
+            this.prototype.once("destroy",()=>{
+                this.options.isLive = true
+                this.initPlayer()
+            })
         }
-        this.isStoped = false
+
     }
     setVolume(val){
         this.prototype.volume = val
@@ -149,7 +157,6 @@ class PlayerSDK {
         this.prototype.exitCssFullscreen()
     }
     playAtTime(start_time,end_time,urlData){
-        // this.$emit("playHls")
         let currentTime = null   //开始播放的时间点
         let activeIndex = null  //播放视频的指针
 
@@ -160,12 +167,8 @@ class PlayerSDK {
             }
         })
         //通过URL获取pid did
-        let temp = urlData[activeIndex].hls_url.split("vod/")[1]
-        this.options.product_id = temp.split("/")[0]
-        this.options.device_id = temp.split("/")[1].split("_")[0]
-        this.options.channel_id = temp.split("/")[1].split("_")[1]
-        this.options.video_id = urlData[activeIndex].videoid
-        this.getHlsPlayToken().then(res=>{
+        let info = urlData[activeIndex].hls_url.split("vod/")[1]
+        this.getHlsPlayToken(info).then(res=>{
             let token = res
             console.log("应播放第"+(activeIndex+1)+"个视频")
             this.prototype.destroy()
@@ -177,18 +180,15 @@ class PlayerSDK {
                     this.prototype.currentTime = currentTime
                 })
                 this.prototype.on("ended",()=>{
-                    if(activeIndex == urlData.length){
+                    if(activeIndex == urlData.length-1){
                         //最后一个视频段，触发更新列表事件
+                        this.$emit("REVIEW_END")
                     }else{
-                        //播放下一个视频 ，todo 获取新的的token组成url
-                        let temp2 = urlData[activeIndex+1].hls_url.split("vod/")[1]
-                        this.options.product_id = temp2.split("/")[0]
-                        this.options.device_id = temp2.split("/")[1].split("_")[0]
-
-                        this.options.channel_id = temp2.split("/")[1].split("_")[1]
-                        this.options.video_id = urlData[activeIndex+1].videoid
-                        this.getHlsPlayToken().then(res=>{
-                            this.prototype.src = urlData[activeIndex+1].hls_url+"?token="+res
+                        //播放下一个视频 ，获取新的的token组成url
+                        activeIndex++
+                        let next_info = urlData[activeIndex].hls_url.split("vod/")[1]
+                        this.getHlsPlayToken(next_info).then(res=>{
+                            this.prototype.src = urlData[activeIndex].hls_url+"?token="+res
                         })
                     }
                 })
@@ -241,25 +241,24 @@ class PlayerSDK {
         audio.src = audioURL;
     }
     connectServer(){
-        this.WS = new WebSocket("ws://172.19.3.59:18888/ws/devices?token=test");
-        let socket = new WebSocket("ws://172.19.3.59:18888/ws/devices?token=test");
+        this.WS = new WebSocket(this.options.socketServer || "ws://172.19.3.59:18888/ws/devices?token=test");
         this.WS.onopen =  ()=> {
             console.log("websocket open")
         };
     }
 
-    async getHlsPlayToken(){
+    async getHlsPlayToken(baseInfo){
         let message = {
             "cmd": "get_token",
             "data": {
                 "play_type": 2,
-                "device_id": this.options.device_id,
-                "product_id": this.options.product_id,
-                "channel_id": this.options.channel_id,
-                "video_id": this.options.video_id
+                "product_id": baseInfo.split("/")[0],
+                "device_id": baseInfo.split("/")[1].split("_")[0],
+                "channel_id": baseInfo.split("/")[1].split("_")[1],
+                "video_id": baseInfo.split("/")[2].split(".")[0]
             }
         }
-        let token  = "sa"
+        let token
         this.WS.send(JSON.stringify(message));
         await new Promise((resolve) =>
         {
@@ -277,7 +276,7 @@ class PlayerSDK {
         return parseInt((new Date(formatDate)).valueOf()/1000)
     }
 
-
+    //事件注册
     $on (name,fn){
         if(!this.obj[name]){
             this.obj[name] = [];

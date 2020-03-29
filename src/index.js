@@ -118,13 +118,12 @@ let player = new PlayerSDK({
     el: document.querySelector('#mse'),
     cors: true,
     url: flvUrl,
-    width: 500,
-    height: 300,
+    fluid: false
 });
 // player.playAtTime("2020-03-23 10:45:27",'',urlData)
 window.PlayerSDK = player
 document.getElementById("playHls-btn").onclick = () => {
-    player.playAtTime("2020-03-23 09:36:51",'',urlData)
+    player.playAtTime("2020-03-23 13:25:31",'',urlData)
 }
 document.getElementById("play-btn").onclick = () => {
     player.playLive()

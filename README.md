@@ -15,6 +15,7 @@
 * width: 播放器宽度 数字；
 * height: 播放器高度 数字；
 * volume:预设音量大小。默认值：0.6,参考值：0 ~ 1;选填
+* socketServer: 用于建立socket连接更新token和获取设备状态，必填项（例：ws://172.19.3.59:18888/ws/devices?token=test）
 
  ## 方法
  * 播放直播  player.playLive()
@@ -25,7 +26,22 @@
  * 退出全屏  player.exitCssFullscreen()
  * 切换直播源 player.switchLive(newUrl) 
  * 销毁播发器 player.destroy(boolean) // true 删除内部DOM元素 | false 保留内部DOM元素，默认为true
-
+ * 回播 player.playAtTime(start_time,end_time,urlData)  其中start_time 和 urlData为必填项，urlData为一个数组，
+ 包含了多个回放视频信息
+````
+     [{
+         "end_time": "2020-03-23 09:57:45",
+         "hls_url": "https://v-test.cmcconenet.com:8443/vod/33713/33875316_1/33875316115849267512601584926813805.m3u8",
+         "start_time": "2020-03-23 09:25:51",
+         "videoid": "33875316115849267512601584926813805"
+     }, {
+         "end_time": "2020-03-23 10:29:48",
+         "hls_url": "https://v-test.cmcconenet.com:8443/vod/33713/33875316_1/33875316115849286657901584928727800.m3u8",
+         "start_time": "2020-03-23 09:57:45",
+     }
+        ...
+     ]
+````
 ## 事件
 * 初始化成功 PLAYER_INIT
 * 播放器缓存了资源可播放时触发 PLAYER_CAN_PLAY 
@@ -34,6 +50,7 @@
 * 持续播放 PLAYER_PLAYING
 * 播放暂停 PLAYER_PAUSE
 * 当前播放时间变化时触发 PLAYER_TIME_CHANGE 
+* 回播视频结束时触发 REVIEW_END
 * 实例：
 >```
 >    player.Events("PLAYER_INIT",()=>{
