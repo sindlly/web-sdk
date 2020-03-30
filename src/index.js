@@ -1,7 +1,7 @@
 import PlayerSDK from "./dPlayer";
 // import  PlayerSDK from "./PlayerSDK.min";
 let hlsUrl = 'https://v-test.cmcconenet.com:8443/vod/33713/33875316_1/33875316115844608046431584460869631.m3u8?token=eUTGOV1F7-EYp4Wuso5sritphG8plUhz3RxWpfBA3M-e0yunOa87xsKTr6k461u6sS0doQDNqH-2uGvw-TJmmME45RYc9_CSXY4cjcbs75JQRDdAS1M3B58lhi60YmHl'
-let flvUrl = 'ws://172.19.3.106:8080/live/live_33994213_1.flv?token=eyJrZXkiOjMzLCJzaWduIjoiT0RqUFVnWGloUXFBUC05UTMxLUpEbVBsODRuenItcktlOVREUHhmdlA4YmNGQ3plUlE0Q2hmd3BGUnlrbHRKS2xQd3NxRHlxeTFLbXduWDdyYms5T0dJVzZVZHA5ZWhabGxYQ1RsLWNLa0NlTFViYlNZV0tvVkExcUxKeHNMVjZfRjhXanRvTUVoVFBISUJuWExqUnJsQ0h2b2Jid1FpVWl3Qk1QODZpdHlHdTRkRk1RdWp6WG1iZUdrSGtQUVQ4In0'
+let flvUrl = 'https://v-test-lzw-http-play-gl.cmcconenet.com:8443/live/live_33098500_1.flv?token=eyJrZXkiOjEzNiwic2lnbiI6Ikd1RmhjU2czb0U0ZWNwVUJDTklLdkJjWTZydG53MlZpUC1mVFBQV1dYMXhDWmV3ZGdtY0JjZkhOaHhBRjIwOGhfdEhfb0tmWXMxS2d3QWw4NWpJRWdwVUl2S0ZCYlRfNEJhZktZVDcwcWtJeXJ1by1hcnpFWEZIM25qYnl4aGk5RHBMNElSdkJvZVhfcVlmZE1ITk1HNG5HVE5oRml2MEhIWTVMWXhjUFJVcTFFOGhPZDlIRmVqOXBidkwzRWh4TDJYbWtxaklMTkpRR1VzaUgzTnBDU0EifQ'
 let urlData = [{
         "duration": 1905,
         "end_time": "2020-03-23 09:57:45",
@@ -123,8 +123,12 @@ let player = new PlayerSDK({
 // player.playAtTime("2020-03-23 10:45:27",'',urlData)
 window.PlayerSDK = player
 document.getElementById("playHls-btn").onclick = () => {
-    player.playAtTime("2020-03-23 13:25:31",'',urlData)
+    player.playAtTime("2020-03-23 09:57:45",'2020-03-23 09:57:50',urlData)
 }
+document.getElementById("playHls-btn-other").onclick = () => {
+    player.playAtTime("2020-03-23 09:25:51",'2020-03-23 09:26:51',urlData)
+}
+
 document.getElementById("play-btn").onclick = () => {
     player.playLive()
 }
