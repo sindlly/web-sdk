@@ -200,6 +200,7 @@ class PlayerSDK {
                             this.prototype.on("timeupdate",()=>{
                                 if(activeIndex == endTimeIndex && this.prototype.currentTime >= endTime){
                                     this.prototype.pause()
+                                    this.$emit("REVIEW_END")
                                 }
                             })
                         }
@@ -228,6 +229,7 @@ class PlayerSDK {
                     this.prototype.on("timeupdate",()=>{
                         if(activeIndex == endTimeIndex && this.prototype.currentTime >= endTime){
                             this.prototype.pause()
+                            this.$emit("REVIEW_END")
                         }
                     })
                 }
@@ -260,8 +262,9 @@ class PlayerSDK {
         const constraints = { audio: true };
         navigator.mediaDevices.getUserMedia(constraints).then(
             stream => {
-                this.mediaRecorder =  new MediaRecorder(stream,{mimeType:'audio/webm'});
+                this.mediaRecorder =  new MediaRecorder(stream,{mimeType:'audio/webm;codecs="Opus"'});
                 this.startTalk()
+                console.log(stream)
                 if(fn) fn()
             },
             () => {
@@ -270,10 +273,11 @@ class PlayerSDK {
         );
     }
     startTalk(){
-        this.mediaRecorder.start(1000);
+        this.mediaRecorder.start(20);  //1000 表示1s一个数据
         this.mediaRecorder.onstart  = (e)=> {
             //后面就在这里推送
             console.log("开始录音" )
+            this.chunks.length = 0
             this.mediaRecorder.requestData()
         };
         this.mediaRecorder.onstop  = (e)=>  {
@@ -283,14 +287,15 @@ class PlayerSDK {
         this.mediaRecorder.ondataavailable  =(e)=>  {
             //后面就在这里推送
             console.log("有数据了" )
-            this.chunks.push(ACC.parse(e.data));
+            this.chunks.push(e.data);
         };
     }
     stopTalk(){
         this.mediaRecorder.stop();
         console.log(this.chunks)
         let audio = document.getElementById('audio')
-        let blob = new Blob(this.chunks,{'type':'audio / ogg; codecs = opus'});
+        let blob = new Blob(this.chunks,{'type':'audio /ogg; codecs = AAC'});
+        console.log(blob)
         let audioURL = window.URL.createObjectURL(blob);
         audio.src = audioURL;
     }

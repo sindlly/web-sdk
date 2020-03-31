@@ -1,6 +1,6 @@
 {
   "name": "cmiot-playersdk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "sindlly`s npm",
   "main": "dist/PlayerSDK.min.js",
   "scripts": {
