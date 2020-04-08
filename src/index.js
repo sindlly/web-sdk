@@ -1,7 +1,7 @@
 import PlayerSDK from "./dPlayer";
 // import  PlayerSDK from "./PlayerSDK.min";
 let hlsUrl = 'https://v-test.cmcconenet.com:8443/vod/33713/33875316_1/33875316115844608046431584460869631.m3u8?token=eUTGOV1F7-EYp4Wuso5sritphG8plUhz3RxWpfBA3M-e0yunOa87xsKTr6k461u6sS0doQDNqH-2uGvw-TJmmME45RYc9_CSXY4cjcbs75JQRDdAS1M3B58lhi60YmHl'
-let flvUrl = 'asdf'
+let flvUrl = 'https://v-dev.cmcconenet.com:18080/live/live_33995609_1.flv?token=eyJrZXkiOjUyLCJzaWduIjoibzlsY2FTaGYweUoxWDVsQnRnaWZRNzNCbl93SXlyeS1DcXBBaFFhOFkzeWo2SWN6ZnpWd3FtLTc0bVpZT3RjZ0VjQUpoYkpGeFFsNi1iX3JCYUw0cm1helpiekNqSUZZeUt2MGdTa29vYmxFT1ZOblpPU1ZEVlhBQVI3QUFRWGlUZFI0Y2NpYVF6SU5iVDZJLTNVa3ZISkdidnVkdWw1QVlLajliOUtrVkFpUFFkMWh2blFKN0NPOWlOT2VhbzROIn0'
 let urlData = [{
         "duration": 1905,
         "end_time": "2020-03-23 09:57:45",
