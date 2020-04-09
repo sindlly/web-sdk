@@ -30,7 +30,8 @@ class PlayerSDK {
         this.initPlayer()
         this.WS = null
         this.audioWs = null
-        this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/live/live_33995609_1.flv?token=eyJrZXkiOjU3LCJzaWduIjoiNlZJRUhfckczdGdkR1pZS2s1NHRTSEM5TFZfaXRidkVuMFgyWmpNcTFQRTVyTWtncG1WR21VNTV1Wk1wWFdUWVNLY2VFbnJodG04LVo0eVpTaElveURtelJUMzBlYjcxbU0tZ1YzaXVfbFFZLTh2MndSNEhQZFJ0NkxGLTl0bjFGS2djdlJQTDh1VXhuWFpQV2Nra01TaEt4LU9UTXNYX0NRajhVM3RGaUREVU1jRFZuTk9oTlcySjFMMFk2b2I2In0'
+        this.aIndex = 0
+        this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/audio/live_33995609_1.flv?token=eyJrZXkiOjk1LCJzaWduIjoiMURIU0l6YVcxMUxMMGZBeWUtU1NOUHNaek91T0trYVdDbnhpVzhsVjEtbFJyQTg5UDk2WXJIMWRCWHJXWnl2NFM0RTBwemZPZHZBTkc3MkI0ZkpQZHVYNzZWRWtjdTlMSlEycllmNjVvTG5XUkV1ZDVoX1NLNjN5eXJiMmQ1d29FRzdNS0p4Q2RyN0owcWRGUmc2VmUwOHdPanUxelp5REtHcFgyeF8tQUxYUno0X3EwMGIyVk0td0hKZmhjYzlHIn0'
         this.connectServer()
         // this.ac = new AudioContext();
         // this.osc = this.ac.createOscillator();
@@ -290,7 +291,6 @@ class PlayerSDK {
                 this.audioWs = new WebSocket(this.audioWsUrl);
                 this.mediaRecorder = new MediaRecorder(stream,options);
                 this.audioWs.onmessage  = () => {
-                    console.log("beforestartTalk",this.audioWs.binaryType)
                     console.log("语音通道开启")
                     this.startTalk()
                 };
@@ -300,7 +300,6 @@ class PlayerSDK {
                 this.audioWs.onclose= (e)=>{
                     debugger
                 }
-                console.log(stream)
                 if (fn) fn()
             },
             () => {
@@ -312,13 +311,13 @@ class PlayerSDK {
 
     startTalk() {
         // this.audioWs.send("blob")
-        this.mediaRecorder.start(200);  //1000 表示1s一个数据
+        this.mediaRecorder.start(1000);  //1000 表示1s一个数据
         this.mediaRecorder.onstart = (e) => {
             //后面就在这里推送
             console.log("开始录音")
             this.chunks.length = 0
+            this.aIndex = 0
             this.mediaRecorder.requestData()
-            // this.audioWs.send("start")
         };
         this.mediaRecorder.onstop = (e) => {
             //后面就在这里推送
@@ -327,20 +326,40 @@ class PlayerSDK {
         };
         this.mediaRecorder.ondataavailable = (e) => {
             //后面就在这里推送
-            console.log("有数据了")
+            console.log(this.aIndex++)
             this.chunks.push(e.data);
-            let pushData = lodash.cloneDeep(e.data)
-            let blob = new Blob([e.data], {'type': 'audio/webm'});
-            // let reader = new FileReader();
-            // reader.readAsArrayBuffer(blob);
-            // reader.onload = ()=>{
-            //     console.log(reader.result)
-            //     this.audioWs.send(reader.result)
-            // }
+            if(e.data.size > 0 & this.mediaRecorder.state == "recording"){
+                this.mediaRecorder.stop()
+                this.startTalk()
+                this.mediaRecorder.onstop = ()=>{
+                    let reader = new FileReader();
+                    let blob = new Blob(this.chunks, {'type': 'audio/webm'});
+                    console.log(this.chunks)
+                    console.log(blob)
+                    reader.readAsArrayBuffer(blob);
+                    reader.onload = ()=>{
+                        this.audioWs.send(reader.result)
+                        // this.chunks.length = 0
+                        // console.log(`chunks:${this.chunks}`)
+
+                    }
+                }
+            }
 
         };
     }
-
+    sendAudio(){
+        this.mediaRecorder.stop();
+        this.mediaRecorder.onstop = (res => {
+            let blob = new Blob(this.chunks, {'type': 'audio/webm'});
+            let reader = new FileReader();
+            reader.readAsArrayBuffer(blob);
+            reader.onload = ()=>{
+                this.audioWs.send(reader.result)
+                this.startTalk()
+            }
+        })
+    }
     stopTalk() {
         this.mediaRecorder.stop();
         console.log(this.chunks)
@@ -355,7 +374,6 @@ class PlayerSDK {
             let reader = new FileReader();
             reader.readAsArrayBuffer(blob);
             reader.onload = ()=>{
-                console.log(reader.result)
                 this.audioWs.send(reader.result)
             }
         })
