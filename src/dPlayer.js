@@ -32,7 +32,7 @@ class PlayerSDK {
         this.audioWs = null
         this.aIndex = 0
         this.aListIndex = 0
-        this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/audio/live_33995609_1.flv?token=eyJrZXkiOjEwNSwic2lnbiI6IkhjcURNRmhvb0pUVXYyWl9RaG1DZ25fbUtNWmNtdEpueTYtRTEtUXBucDRiaVJweUJYd24wZm5MaG9XeVBsQTdjRjE2YnJzV2M2NUJOWVNoWWl4RXQ4eDdDU3VFdmx1b0dtNGRtYzVremJKZWpVV2hZWU1teHVMN2xFdmpHWjl6RW1JY29mdUJoX0xZSzNHUjhMQW5yX2VZeXNZc3ltTHpFUXF4V3pCMi0xcWFuSGdKZjFYNnhoQk1wS1JQWmxyMSJ9'
+        this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/audio/live_33995609_1.flv?token=eyJrZXkiOjEsInNpZ24iOiJmRTNvSjZwS2tJcTU2LThUM2VPOGZlUW9Wc0t2LVlva1YyLU9rc1hFbVB2dWlWTVJUSUpfZzhYa2tvbi12blowVnU4bFlQUW92UlBiYkRVQ3ZCT3N1VDNYXzdlRFMxRTJIbUJ3VGdNY2VUWWNrRGQ1Mjc2cFoycTVfbFpoRDAyRVlDZTlZWG1YNDdRaE83eGhQM19oUzVsV09LU1pHN3VHSGR1Q3lRY2F5RjN1d3pRbENOT2lDNFE3bk85MXl5Z2QifQ'
         this.connectServer()
         // this.ac = new AudioContext();
         // this.osc = this.ac.createOscillator();
@@ -287,7 +287,7 @@ class PlayerSDK {
                 console.log(MediaRecorder)
                 let options = {
                     mimeType: 'audio/webm;codecs="Opus"',
-                    audioBitsPerSecond: 30000,
+                    audioBitsPerSecond: 48000,
                 }
                 this.mediaRecorder[0] = new MediaRecorder(stream,options);
                 this.mediaRecorder[1] = new MediaRecorder(stream,options);
@@ -320,8 +320,9 @@ class PlayerSDK {
 
     startTalk(stream,options) {
         this.aListIndex = this.aListIndex>=8?0:this.aListIndex
-        let mIndex = this.aListIndex  // 用于循环存储语音
-        this.mediaRecorder[mIndex].start(1000);  //1000 表示1s一个数据
+        // let mIndex = this.aListIndex  // 用于循环存储语音
+        let mIndex = 0  // 用于循环存储语音
+        this.mediaRecorder[mIndex].start(200);  //1000 表示1s一个数据
         this.mediaRecorder[mIndex].onstart = (e) => {
             //后面就在这里推送
             console.log(`开始录音${mIndex}`)
@@ -336,22 +337,29 @@ class PlayerSDK {
         let reader = new FileReader();
         this.mediaRecorder[mIndex].ondataavailable = (e) => {
             //后面就在这里推送
-            this.chunks[mIndex].push(e.data);
-            if(e.data.size > 0 & this.mediaRecorder[mIndex].state == "recording"){
-                this.mediaRecorder[mIndex].stop()
-                this.mediaRecorder[mIndex].onstop = ()=>{
-                    ++this.aListIndex
-                    this.startTalk(stream,options)
-                    let blob = new Blob(this.chunks[mIndex], {'type': 'audio/webm'});
-                    reader.readAsArrayBuffer(blob);
-                    reader.onload = ()=>{
-                        this.audioWs.send(reader.result)
-                        this.chunks[mIndex] = []
-                        this.mediaRecorder[mIndex] = null
-                        this.mediaRecorder[mIndex] = new MediaRecorder(stream,options);
-                    }
+            if(e.data.size > 0){
+                let blob = new Blob([e.data], {'type': 'audio/webm'});
+                reader.readAsArrayBuffer(blob);
+                reader.onload = ()=>{
+                    this.audioWs.send(reader.result)
                 }
             }
+            this.chunks[mIndex].push(e.data);
+            // if(e.data.size > 0 & this.mediaRecorder[mIndex].state == "recording"){
+            //     this.mediaRecorder[mIndex].stop()
+            //     this.mediaRecorder[mIndex].onstop = ()=>{
+            //         ++this.aListIndex
+            //         this.startTalk(stream,options)
+            //         let blob = new Blob(this.chunks[mIndex], {'type': 'audio/webm'});
+            //         reader.readAsArrayBuffer(blob);
+            //         reader.onload = ()=>{
+            //             this.audioWs.send(reader.result)
+            //             this.chunks[mIndex] = []
+            //             this.mediaRecorder[mIndex] = null
+            //             this.mediaRecorder[mIndex] = new MediaRecorder(stream,options);
+            //         }
+            //     }
+            // }
 
         };
     }
@@ -372,10 +380,11 @@ class PlayerSDK {
         this.mediaRecorder[0].onstop = (res => {
             let audio = document.getElementById('audio')
             let download = document.getElementById('download')
-            let blob = new Blob(this.chunks[0], {'type': 'audio/webm'});
+            let blob = new Blob(this.chunks, {'type': 'audio/webm'});
             let audioURL = window.URL.createObjectURL(blob);
             audio.src = audioURL;
             download.href = audioURL
+            this.audioWs.close()
             // let reader = new FileReader();
             // reader.readAsArrayBuffer(blob);
             // reader.onload = ()=>{
