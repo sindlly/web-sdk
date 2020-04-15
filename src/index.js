@@ -1,7 +1,8 @@
 import PlayerSDK from "./dPlayer";
 // import  PlayerSDK from "./PlayerSDK.min";
 let hlsUrl = 'https://v-test.cmcconenet.com:8443/vod/33713/33875316_1/33875316115844608046431584460869631.m3u8?token=eUTGOV1F7-EYp4Wuso5sritphG8plUhz3RxWpfBA3M-e0yunOa87xsKTr6k461u6sS0doQDNqH-2uGvw-TJmmME45RYc9_CSXY4cjcbs75JQRDdAS1M3B58lhi60YmHl'
-let flvUrl = 'https://v-dev.cmcconenet.com:18080/live/live_33995609_1.flv?token=eyJrZXkiOjEzLCJzaWduIjoiVlhoU3phWHFiakxLc01sbndHZXZxeFhJQnZ0OUZxblZZNWo3cVJlc1dZUng3UHo4RU52dXV6dWp5c3RHTkxZcmdGX2p6TWVmeS0waV9MLU5pNnMyenpOeF9FVERIT0hRd05YSEtWdFdpSFhxWXFlbDNYcGpiak5iYUFvUTJuSGFTQjdjVE00LUhfVXdieFR2ODVZWjdMT3dydGlYaXpQNlZTZmtiY1drbUlZSFQxd21OaHVSaTd0NGlZSjdkRXV1In0'
+let flvUrl = ""
+let audioUrl = null
 let urlData = [{
         "duration": 1905,
         "end_time": "2020-03-23 09:57:45",
@@ -113,68 +114,77 @@ let urlData = [{
         "start_timestamp": 1584943033679,
         "videoid": "33875316115849430336791584943097662"
     }]
-let player = new PlayerSDK({
+if(localStorage.getItem("audioUrl")){
+  document.getElementById("liveInput").value = localStorage.getItem("audioUrl")
+  flvUrl = localStorage.getItem("audioUrl")
+  audioUrl = flvUrl.replace("https","ws").replace("live/","ws/media/audio/")
+}
+document.getElementById("liveInput").addEventListener("change",(e)=>{
+  flvUrl = e.target.value
+  audioUrl = flvUrl.replace("https","ws").replace("live/","ws/media/audio/")
+  localStorage.setItem("audioUrl",flvUrl)
+})
+document.getElementById("play").onclick = ()=>{
+  let player = new PlayerSDK({
     id: 'video',
     el: document.querySelector('#mse'),
     cors: true,
     url: flvUrl,
     fluid: false
-});
+  });
 // player.playAtTime("2020-03-23 10:45:27",'',urlData)
-window.PlayerSDK = player
-document.getElementById("playHls-btn").onclick = () => {
+  window.PlayerSDK = player
+  document.getElementById("playHls-btn").onclick = () => {
     player.playAtTime("2020-03-23 09:57:45",'2020-03-23 09:57:50',urlData)
-}
-document.getElementById("playHls-btn-other").onclick = () => {
+  }
+  document.getElementById("playHls-btn-other").onclick = () => {
     player.playAtTime("2020-03-23 09:25:51",'2020-03-23 09:26:51',urlData)
-}
+  }
 
-document.getElementById("play-btn").onclick = () => {
+  document.getElementById("play-btn").onclick = () => {
     player.playLive()
-}
-document.getElementById("pause-btn").onclick = () => {
+  }
+  document.getElementById("pause-btn").onclick = () => {
     player.pause()
-}
+  }
 
-document.getElementById("playFlv-btn").onclick = () => {
+  document.getElementById("playFlv-btn").onclick = () => {
     player.switchPlayType('flv', flvUrl, () => {
     })
-}
-document.getElementById("replayFlv-btn").onclick = () => {
+  }
+  document.getElementById("replayFlv-btn").onclick = () => {
     player.resume()
-}
-document.getElementById("stop-btn").onclick = () => {
+  }
+  document.getElementById("stop-btn").onclick = () => {
     player.stop()
-}
-document.getElementById("fullscreen").onclick = () => {
+  }
+  document.getElementById("fullscreen").onclick = () => {
     player.getCssFullscreen()
-}
-document.getElementById("start-talk").onclick = () => {
+  }
+  document.getElementById("start-talk").onclick = () => {
     player.initTalk()
-}
-document.getElementById("end-talk").onclick = () => {
+  }
+  document.getElementById("end-talk").onclick = () => {
     player.stopTalk()
-}
+  }
 
-player.Events("PLAYER_INIT", () => {
+  player.Events("PLAYER_INIT", () => {
     // console.log("可以播放了")
-})
-player.Events("PLAYER_PLAY", () => {
+  })
+  player.Events("PLAYER_PLAY", () => {
     console.log("PLAYER_PLAY")
-})
-player.Events("PLAYER_PAUSE", () => {
+  })
+  player.Events("PLAYER_PAUSE", () => {
     console.log("PLAYER_PAUSE")
-})
+  })
 // player.Events("PLAYER_PLAY_LOADING",()=>{
 //     console.log("PLAYER_PLAY_LOADING")
 // })
-player.Events("PLAYER_INIT_ERROR", () => {
+  player.Events("PLAYER_INIT_ERROR", () => {
     console.log("PLAYER_INIT_ERROR")
-})
-player.Events("PLAYER_STOP", () => {
+  })
+  player.Events("PLAYER_STOP", () => {
     console.log("PLAYER_STOP")
-})
-// player.Events("timeupdate",()=>{
-//     console.log("timeupdate")
-// })
-
+  })
+  player.audioWsUrl = audioUrl
+}

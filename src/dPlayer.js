@@ -278,6 +278,7 @@ class PlayerSDK {
     }
 
     initTalk(fn) {
+        this.isSupportAudioTalk()
         const constraints = {audio: true};
         navigator.mediaDevices.getUserMedia(constraints).then(
             stream => {
@@ -303,7 +304,10 @@ class PlayerSDK {
             () => {
                 this.$emit("AudioTalkFailed")
             }
-        );
+        ).catch((err)=>{
+          debugger
+          console.log(err)
+        });
 
     }
 
