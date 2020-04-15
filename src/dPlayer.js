@@ -32,7 +32,7 @@ class PlayerSDK {
         this.audioWs = null
         this.aIndex = 0
         this.aListIndex = 0
-        this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/audio/live_33995609_1.flv?token=eyJrZXkiOjEzLCJzaWduIjoiVlhoU3phWHFiakxLc01sbndHZXZxM2N0ekQtdkphN2x2cVp5eGFzR1FkNWVYeVQ4UGJValVjY1d6LUVjMWI3VFhzTURpNGRSZnNJZlNrZ1RWcEEyZDhNX2xTTDZiRW1VN0JBaFI1OE1FS0NnVlFnX0ZRMFM1WWV2cUVUQWhIeVJsMGc0Y1ZOTi1HbmlaWlpxRENGUEE2WWMwNDVQWTJFWER3eWNtSnhic1FSSXFVbkhNSzY1Si0xLTFYWHVpczh1In0'
+        this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/audio/live_33995609_1.flv?token=eyJrZXkiOjIzLCJzaWduIjoiRFg5enVmbHZ0N29rS2QzS1lFb2xpV1B6SWhvNEtCMnR4RVg3eDNPaFpmdlBpU2RQbDgyRUZxdkdXenJvZW1LTVpUc1I2NnBOeVZ4WVdJMGtpVmxPajNDTTdxR1dPbzgyVlJkYUJpTWQwbHpFaEIyVU04LUg1QkZVVVRJekl0MWxvcXRXRFQ2STZQVVpuMWp5UGVPd2VqQzJodkdvR3M0YUk4bXpDRE5FQVo0bHo4U1ZXeXVqcXNtaldxZ1lGdEFuIn0'
         this.connectServer()
     }
 
