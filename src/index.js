@@ -115,13 +115,13 @@ let urlData = [{
         "videoid": "33875316115849430336791584943097662"
     }]
 if(localStorage.getItem("audioUrl")){
-  document.getElementById("liveInput").value = localStorage.getItem("audioUrl")
+  // document.getElementById("liveInput").value = localStorage.getItem("audioUrl")
   flvUrl = localStorage.getItem("audioUrl")
-  audioUrl = flvUrl.replace("https","ws").replace("live/","ws/media/audio/")
+  // audioUrl = flvUrl.replace("https","ws").replace("live/","ws/media/audio/")
 }
 document.getElementById("liveInput").addEventListener("change",(e)=>{
   flvUrl = e.target.value
-  audioUrl = flvUrl.replace("https","ws").replace("live/","ws/media/audio/")
+  // audioUrl = flvUrl.replace("https","ws").replace("live/","ws/media/audio/")
   localStorage.setItem("audioUrl",flvUrl)
 })
 document.getElementById("play").onclick = ()=>{
@@ -132,6 +132,8 @@ document.getElementById("play").onclick = ()=>{
     url: flvUrl,
     fluid: false
   });
+  let urlData= JSON.parse(document.getElementById("historyInput").value)
+    console.log(urlData)
 // player.playAtTime("2020-03-23 10:45:27",'',urlData)
   window.PlayerSDK = player
   document.getElementById("playHls-btn").onclick = () => {
@@ -186,5 +188,5 @@ document.getElementById("play").onclick = ()=>{
   player.Events("PLAYER_STOP", () => {
     console.log("PLAYER_STOP")
   })
-  player.audioWsUrl = audioUrl
+  // player.audioWsUrl = audioUrl
 }

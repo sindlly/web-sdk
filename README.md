@@ -16,6 +16,9 @@
 * height: 播放器高度 数字；
 * volume:预设音量大小。默认值：0.6,参考值：0 ~ 1;选填
 * socketServer: 用于建立socket连接更新token和获取设备状态，必填项（例：ws://172.19.3.59:18888/ws/devices?token=test）
+* registerDeviceEvent : 是否注册设备事件。默认false
+* product_id：如果 registerDeviceEvent 为true , 则为必填项
+* device_id: 如果 registerDeviceEvent 为true , 则为必填项
 
  ## 方法
  * 播放直播  player.playLive()
@@ -28,6 +31,9 @@
  * 销毁播发器 player.destroy(boolean) // true 删除内部DOM元素 | false 保留内部DOM元素，默认为true
  * 回播 player.playAtTime(start_time,end_time,urlData)  其中start_time 和 urlData为必填项，urlData为一个数组，
  包含了多个回放视频信息
+ * 初始化对话通道 player.initTalk()  //初始成功后即进入对话状态
+ * 停止对话 player.stopTalk()
+ * 开始对话 play.startTalk()
 ````
      [{
          "end_time": "2020-03-23 09:57:45",
@@ -51,6 +57,7 @@
 * 播放暂停 PLAYER_PAUSE
 * 当前播放时间变化时触发 PLAYER_TIME_CHANGE 
 * 回播视频结束时触发 REVIEW_END
+* 设备离线时触发 DEVICE_ONLINE_OFFLINE_CHANGE
 * 实例：
 >```
 >    player.Events("PLAYER_INIT",()=>{

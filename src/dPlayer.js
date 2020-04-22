@@ -20,6 +20,9 @@ class PlayerSDK {
             closeControlsBlur: true,
             closeFocusVideoFocus: true,
             closePlayVideoFocus: true,
+            registerDeviceEvent : false, //若需要注册事件，需要传入产品ID和设备ID
+            product_id:'',
+            device_id:'',
             socketServer: '' //获取token的 ws服务端地址
         }
         this.flvUrl = JSON.parse(JSON.stringify(options.url))
@@ -30,8 +33,6 @@ class PlayerSDK {
         this.initPlayer()
         this.WS = null
         this.audioWs = null
-        this.aIndex = 0
-        this.aListIndex = 0
         this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/audio/live_33995609_1.flv?token=eyJrZXkiOjIzLCJzaWduIjoiRFg5enVmbHZ0N29rS2QzS1lFb2xpV1B6SWhvNEtCMnR4RVg3eDNPaFpmdlBpU2RQbDgyRUZxdkdXenJvZW1LTVpUc1I2NnBOeVZ4WVdJMGtpVmxPajNDTTdxR1dPbzgyVlJkYUJpTWQwbHpFaEIyVU04LUg1QkZVVVRJekl0MWxvcXRXRFQ2STZQVVpuMWp5UGVPd2VqQzJodkdvR3M0YUk4bXpDRE5FQVo0bHo4U1ZXeXVqcXNtaldxZ1lGdEFuIn0'
         this.connectServer()
     }
@@ -116,6 +117,11 @@ class PlayerSDK {
             case "REVIEW_END":
                 this.$on("REVIEW_END", () => {
                     if (fn) fn()
+                })
+                break;
+            case "DEVICE_ONLINE_OFFLINE_CHANGE":
+                this.$on("DEVICE_ONLINE_OFFLINE_CHANGE",()=>{
+                    if(fn) fn()
                 })
         }
     }
@@ -271,6 +277,7 @@ class PlayerSDK {
 
     }
 
+
     isSupportAudioTalk() {
         if (!navigator.mediaDevices.getUserMedia) {
             console.log("浏览器不支持对讲功能")
@@ -279,6 +286,7 @@ class PlayerSDK {
 
     initTalk(fn) {
         this.isSupportAudioTalk()
+        this.audioWsUrl=this.options.url.replace("https","ws").replace("live/","ws/media/audio/")
         const constraints = {audio: true};
         navigator.mediaDevices.getUserMedia(constraints).then(
             stream => {
@@ -294,10 +302,10 @@ class PlayerSDK {
                     this.startTalk(stream,options)
                 };
                 this.audioWs.onerror= (e)=>{
-                    debugger
+
                 }
                 this.audioWs.onclose= (e)=>{
-                    debugger
+
                 }
                 if (fn) fn()
             },
@@ -305,27 +313,19 @@ class PlayerSDK {
                 this.$emit("AudioTalkFailed")
             }
         ).catch((err)=>{
-          debugger
           console.log(err)
         });
 
     }
-
-    startTalk(stream,options) {
-        this.aListIndex = this.aListIndex>=8?0:this.aListIndex
-        // let mIndex = this.aListIndex  // 用于循环存储语音
-        let mIndex = 0  // 用于循环存储语音
+    startTalk() {
         this.mediaRecorder.start(200);  //1000 表示1s一个数据
         this.mediaRecorder.onstart = (e) => {
             //后面就在这里推送
-            console.log(`开始录音${mIndex}`)
             this.mediaRecorder.requestData()
         };
         this.mediaRecorder.onstop = (e) => {
-
             //后面就在这里推送
             console.log("录音结束")
-            // this.audioWs.send("end")
         };
         let reader = new FileReader();
         this.mediaRecorder.ondataavailable = (e) => {
@@ -343,15 +343,15 @@ class PlayerSDK {
 
     stopTalk() {
         this.mediaRecorder.stop();
-        this.mediaRecorder.onstop = (res => {
-            let audio = document.getElementById('audio')
-            let download = document.getElementById('download')
-            let blob = new Blob(this.chunks, {'type': 'audio/webm'});
-            let audioURL = window.URL.createObjectURL(blob);
-            audio.src = audioURL;
-            download.href = audioURL
-            this.audioWs.close()
-        })
+        // this.mediaRecorder.onstop = (res => {
+        //     let audio = document.getElementById('audio')
+        //     let download = document.getElementById('download')
+        //     let blob = new Blob(this.chunks, {'type': 'audio/webm'});
+        //     let audioURL = window.URL.createObjectURL(blob);
+        //     audio.src = audioURL;
+        //     download.href = audioURL
+        //     this.audioWs.close()
+        // })
 
     }
 
@@ -359,6 +359,9 @@ class PlayerSDK {
         this.WS = new WebSocket(this.options.socketServer || "ws://172.19.3.59:18888/ws/devices?token=test");
         this.WS.onopen = () => {
             // console.log("websocket open")
+            if(this.options.registerDeviceEvent == true){
+                this.registerDeviceEvent()
+            }
         };
     }
 
@@ -383,6 +386,27 @@ class PlayerSDK {
         });
         return token
     }
+
+    registerDeviceEvent(){
+        let message = {
+            "cmd": "register",
+            "data": {
+                "product_id": this.options.product_id,
+                "device_id": this.options.device_id,
+            }
+        }
+        this.WS.send(JSON.stringify(message));
+        this.WS.onmessage = (event) => {
+            let status = JSON.parse(event.data).data.event_msg.status
+            if(status == "offline"){
+                this.$emit("DEVICE_ONLINE_OFFLINE_CHANGE")
+            }
+            console.log(status)
+        };
+    }
+
+
+
 
     //工具方法
     //格式化时间转时间戳(s)
