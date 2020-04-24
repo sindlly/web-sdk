@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
-    entry: ['@babel/polyfill',process.env.NODE_ENV === 'dev'?'./src/index.js':'./src/dPlayer.js'],
+    entry: ['@babel/polyfill',process.env.NODE_ENV === 'publish'?'./src/dPlayer.js':'./src/index.js'],
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({

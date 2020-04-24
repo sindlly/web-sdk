@@ -20,9 +20,9 @@ class PlayerSDK {
             closeControlsBlur: true,
             closeFocusVideoFocus: true,
             closePlayVideoFocus: true,
-            registerDeviceEvent : false, //若需要注册事件，需要传入产品ID和设备ID
-            product_id:'',
-            device_id:'',
+            registerDeviceEvent: false, //若需要注册事件，需要传入产品ID和设备ID
+            product_id: '',
+            device_id: '',
             socketServer: '' //获取token的 ws服务端地址
         }
         this.flvUrl = JSON.parse(JSON.stringify(options.url))
@@ -33,8 +33,9 @@ class PlayerSDK {
         this.initPlayer()
         this.WS = null
         this.audioWs = null
-        this.audioWsUrl = 'ws://172.19.3.106:8080/ws/media/audio/live_33995609_1.flv?token=eyJrZXkiOjIzLCJzaWduIjoiRFg5enVmbHZ0N29rS2QzS1lFb2xpV1B6SWhvNEtCMnR4RVg3eDNPaFpmdlBpU2RQbDgyRUZxdkdXenJvZW1LTVpUc1I2NnBOeVZ4WVdJMGtpVmxPajNDTTdxR1dPbzgyVlJkYUJpTWQwbHpFaEIyVU04LUg1QkZVVVRJekl0MWxvcXRXRFQ2STZQVVpuMWp5UGVPd2VqQzJodkdvR3M0YUk4bXpDRE5FQVo0bHo4U1ZXeXVqcXNtaldxZ1lGdEFuIn0'
+        this.audioWsUrl = ''
         this.connectServer()
+
     }
 
     initPlayer() {
@@ -120,8 +121,8 @@ class PlayerSDK {
                 })
                 break;
             case "DEVICE_ONLINE_OFFLINE_CHANGE":
-                this.$on("DEVICE_ONLINE_OFFLINE_CHANGE",()=>{
-                    if(fn) fn()
+                this.$on("DEVICE_ONLINE_OFFLINE_CHANGE", () => {
+                    if (fn) fn()
                 })
         }
     }
@@ -279,32 +280,60 @@ class PlayerSDK {
 
 
     isSupportAudioTalk() {
-        if (!navigator.mediaDevices.getUserMedia) {
-            console.log("浏览器不支持对讲功能")
+        // if (!navigator.mediaDevices.getUserMedia) {
+        //     console.log("浏览器不支持对讲功能")
+        // }
+        // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
+        if (navigator.mediaDevices === undefined) {
+            navigator.mediaDevices = {};
+        }
+
+        // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+        // 因为这样可能会覆盖已有的属性。这里我们只会在没有getUserMedia属性的时候添加它。
+        if (navigator.mediaDevices.getUserMedia === undefined) {
+            navigator.mediaDevices.getUserMedia = function (constraints) {
+                // 首先，如果有getUserMedia的话，就获得它
+                var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+                if (!getUserMedia) {
+                    return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                }
+                // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+                return new Promise(function (resolve, reject) {
+                    getUserMedia.call(navigator, constraints, resolve, reject);
+                });
+            }
         }
     }
 
     initTalk(fn) {
         this.isSupportAudioTalk()
-        this.audioWsUrl=this.options.url.replace("https","ws").replace("live/","ws/media/audio/")
+        if (this.audioWsUrl == "") {
+            if (this.options.url.indexOf("https") > -1) {
+                this.audioWsUrl = this.options.url.replace("https", "wss").replace("live/", "ws/media/audio/")
+            } else {
+                this.audioWsUrl = this.options.url.replace("http", "ws").replace("live/", "ws/media/audio/")
+            }
+        }
         const constraints = {audio: true};
         navigator.mediaDevices.getUserMedia(constraints).then(
             stream => {
                 console.log(MediaRecorder)
                 let options = {
-                    mimeType: 'audio/webm;codecs="Opus"',
+                    // mimeType: 'audio/webm;codecs="Opus"',
+                    mimeType: 'audio/webm',
                     audioBitsPerSecond: 48000,
                 }
-                this.mediaRecorder = new MediaRecorder(stream,options);
+                this.mediaRecorder = new MediaRecorder(stream, options);
                 this.audioWs = new WebSocket(this.audioWsUrl);
-                this.audioWs.onmessage  = () => {
+                this.audioWs.onmessage = () => {
                     console.log("语音通道开启")
-                    this.startTalk(stream,options)
+                    this.startTalk(stream, options)
                 };
-                this.audioWs.onerror= (e)=>{
+                this.audioWs.onerror = (e) => {
 
                 }
-                this.audioWs.onclose= (e)=>{
+                this.audioWs.onclose = (e) => {
 
                 }
                 if (fn) fn()
@@ -312,11 +341,12 @@ class PlayerSDK {
             () => {
                 this.$emit("AudioTalkFailed")
             }
-        ).catch((err)=>{
-          console.log(err)
+        ).catch((err) => {
+            console.log(err)
         });
 
     }
+
     startTalk() {
         this.mediaRecorder.start(200);  //1000 表示1s一个数据
         this.mediaRecorder.onstart = (e) => {
@@ -330,10 +360,10 @@ class PlayerSDK {
         let reader = new FileReader();
         this.mediaRecorder.ondataavailable = (e) => {
             //后面就在这里推送
-            if(e.data.size > 0){
+            if (e.data.size > 0) {
                 let blob = new Blob([e.data], {'type': 'audio/webm'});
                 reader.readAsArrayBuffer(blob);
-                reader.onload = ()=>{
+                reader.onload = () => {
                     this.audioWs.send(reader.result)
                 }
             }
@@ -359,7 +389,7 @@ class PlayerSDK {
         this.WS = new WebSocket(this.options.socketServer || "ws://172.19.3.59:18888/ws/devices?token=test");
         this.WS.onopen = () => {
             // console.log("websocket open")
-            if(this.options.registerDeviceEvent == true){
+            if (this.options.registerDeviceEvent == true) {
                 this.registerDeviceEvent()
             }
         };
@@ -387,7 +417,7 @@ class PlayerSDK {
         return token
     }
 
-    registerDeviceEvent(){
+    registerDeviceEvent() {
         let message = {
             "cmd": "register",
             "data": {
@@ -398,14 +428,12 @@ class PlayerSDK {
         this.WS.send(JSON.stringify(message));
         this.WS.onmessage = (event) => {
             let status = JSON.parse(event.data).data.event_msg.status
-            if(status == "offline"){
+            if (status == "offline") {
                 this.$emit("DEVICE_ONLINE_OFFLINE_CHANGE")
             }
             console.log(status)
         };
     }
-
-
 
 
     //工具方法
