@@ -110,9 +110,9 @@ class PlayerSDK {
                     if (fn) fn()
                 })
                 break;
-            case "PLAYER_TIME_CHANGE ":
-                this.prototype.on('timeupdate', () => {
-                    if (fn) fn()
+            case "PLAYER_TIME_CHANGE":
+                this.prototype.on('timeupdate', (e) => {
+                    if (fn) fn(e)
                 })
                 break;
             case "REVIEW_END":
@@ -190,7 +190,7 @@ class PlayerSDK {
     }
 
     playAtTime(start_time, end_time, urlData) {
-        this.prototype.emit('waiting')
+        // this.prototype.emit('waiting')
         let currentTime = null   //开始播放的时间点
         let endTime = null  //播放结束时间
         let activeIndex = null  //播放视频的指针
@@ -212,37 +212,40 @@ class PlayerSDK {
             let token = res
             // console.log("应播放第"+(activeIndex+1)+"个视频")
             if (this.options.isLive == true) {
-                this.prototype.destroy()
-                this.prototype.on('destroy', () => {
-                    this.options.url = urlData[activeIndex].hls_url + "?token=" + token
-                    this.options.isLive = false   //切换为hls
-                    this.initPlayer()
-                    this.prototype.on("complete", () => {
-                        this.prototype.currentTime = currentTime
-                        if (end_time) {
-                            //如果有传入结束时间，则到时间后暂停播放
-                            this.prototype.on("timeupdate", () => {
-                                if (activeIndex == endTimeIndex && this.prototype.currentTime >= endTime) {
-                                    this.prototype.pause()
-                                    this.$emit("REVIEW_END")
-                                }
-                            })
-                        }
-                        this.prototype.on("ended", () => {
-                            if (activeIndex == urlData.length - 1) {
-                                //最后一个视频段，触发更新列表事件
+                this.prototype.__flv__.destroy()
+                document.getElementById(this.options.id).innerHTML = null
+                this.options.url = urlData[activeIndex].hls_url + "?token=" + token
+                this.options.isLive = false   //切换为hls
+                this.initPlayer()
+                this.Events("PLAYER_TIME_CHANGE", (e) => {
+                    console.log("PLAYER_TIME_CHANGE",e)
+                })
+                this.prototype.on("complete", () => {
+                    this.prototype.currentTime = currentTime
+                    if (end_time) {
+                        //如果有传入结束时间，则到时间后暂停播放
+                        this.prototype.on("timeupdate", () => {
+                            if (activeIndex == endTimeIndex && this.prototype.currentTime >= endTime) {
+                                this.prototype.pause()
                                 this.$emit("REVIEW_END")
-                            } else {
-                                //播放下一个视频 ，获取新的的token组成url
-                                activeIndex++
-                                let next_info = urlData[activeIndex].hls_url.split("vod/")[1]
-                                this.getHlsPlayToken(next_info).then(res => {
-                                    this.prototype.src = urlData[activeIndex].hls_url + "?token=" + res
-                                })
                             }
                         })
+                    }
+                    this.prototype.on("ended", () => {
+                        if (activeIndex == urlData.length - 1) {
+                            //最后一个视频段，触发更新列表事件
+                            this.$emit("REVIEW_END")
+                        } else {
+                            //播放下一个视频 ，获取新的的token组成url
+                            activeIndex++
+                            let next_info = urlData[activeIndex].hls_url.split("vod/")[1]
+                            this.getHlsPlayToken(next_info).then(res => {
+                                this.prototype.src = urlData[activeIndex].hls_url + "?token=" + res
+                            })
+                        }
                     })
                 })
+
             } else {
                 this.options.url = urlData[activeIndex].hls_url + "?token=" + token
                 this.prototype.src = this.options.url

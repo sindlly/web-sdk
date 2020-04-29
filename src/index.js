@@ -137,11 +137,13 @@ document.getElementById("play").onclick = () => {
         cors: true,
         url: flvUrl,
         fluid: false,
-        socketServer: 'wss://v-dev.cmcconenet.com:18080/ws/manage/devices?token=931UzsBCN47X41-Y1ntg1QE33eRG0hewGZGl3V2x8hyDpmiEq5nvt7RrRiDBUXx78g4oQgr3iFo1d15o8Za58dL0nKeaTIMZyXsv6gVAJu89Zxvhyu1FYihetlJNp00suqPgo0OrLrJHiDvpPo_758mLaZwBGJCKsfxKzcrasXc'
+        socketServer: 'wss://v-dev.cmcconenet.com:18080/ws/manage/devices?token=twAPUwGU9BGw3doWEw-rAg9M1m0IrVvV6Hs8-Z0IXmB7dMxCC0qeh4rfLPg8IJ4XoTpnO9177uS9sql4HddyaRR9NLXuEtFcBBknuSoQwOX-hs3c9mk4JlILBU35graEDT6Gpixnj5YYJebRaUDnOQ0UA8vzptTKc2nNrTR5OY8'
     });
     let urlData = null
-    if (document.getElementById("historyInput").value)
+    if (document.getElementById("historyInput").value){
         urlData = JSON.parse(document.getElementById("historyInput").value)
+    }
+
     window.PlayerSDK = player
     player.audioWsUrl = document.getElementById("audioInput").value
     document.getElementById("playHls-btn").onclick = () => {
@@ -149,7 +151,7 @@ document.getElementById("play").onclick = () => {
     }
 
     document.getElementById("play-btn").onclick = () => {
-        player.playLive()
+        player.play()
     }
     document.getElementById("pause-btn").onclick = () => {
         player.pause()
@@ -183,14 +185,17 @@ document.getElementById("play").onclick = () => {
     player.Events("PLAYER_PAUSE", () => {
         console.log("PLAYER_PAUSE")
     })
-// player.Events("PLAYER_PLAY_LOADING",()=>{
-//     console.log("PLAYER_PLAY_LOADING")
-// })
+    player.Events("PLAYER_PLAY_LOADING",()=>{
+        console.log("PLAYER_PLAY_LOADING")
+    })
     player.Events("PLAYER_INIT_ERROR", () => {
         console.log("PLAYER_INIT_ERROR")
     })
     player.Events("PLAYER_STOP", () => {
         console.log("PLAYER_STOP")
     })
+    // player.Events("PLAYER_TIME_CHANGE", (e) => {
+    //     console.log("PLAYER_TIME_CHANGE",e)
+    // })
     // player.audioWsUrl = audioUrl
 }
