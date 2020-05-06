@@ -1,6 +1,6 @@
 {
   "name": "cmiot-playersdk",
-  "version": "0.0.11",
+  "version": "0.0.16",
   "description": "sindlly`s npm",
   "main": "dist/PlayerSDK.min.js",
   "scripts": {
@@ -29,9 +29,8 @@
     "lodash": "^4.17.15",
     "scp2": "^0.5.0",
     "uupaa.aac.js": "^0.4.3",
-    "xgplayer": "^2.5.5",
-    "xgplayer-flv": "^2.2.0-beta.0",
+    "xgplayer": "^2.6.19",
     "xgplayer-flv.js": "^2.1.1",
-    "xgplayer-hls.js": "^2.1.6"
+    "xgplayer-hls.js": "^2.2.0"
   }
 }

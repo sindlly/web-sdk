@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PlayerSDK</title>
+</head>
+<body>
+<div id="video" style="width: 500px;height: 300px"></div>
+<div>
+        <span>
+            <button id="play-btn">播放</button>
+            <button id="pause-btn">暂停</button>
+            <button id="playFlv-btn">播放FLV</button>
+            <button id="playHls-btn">播放HLS</button>
+            <button id="playHls-btn-other">播放另一段视频</button>
+            <button id="replayFlv-btn">恢复直播</button>
+            <button id="stop-btn">停止直播</button>
+            <button id="fullscreen">全屏</button>
+            <button id="start-talk">开始对话</button>
+            <button id="end-talk">结束对话</button>
+        </span>
+
+</div>
+<div class="live-input">
+  直播地址：<input id="liveInput" type="text" value=''>
+</div>
+<div class="live-input">
+    点播数据：<input id="historyInput" value='[
+  {
+    "start_time": "2020-04-28 23:47:13",
+    "end_time": "2020-04-28 23:52:01",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880888332541588088905279.m3u8",
+    "videoid": "33997222115880888332541588088905279"
+  },
+  {
+    "start_time": "2020-04-28 23:53:53",
+    "end_time": "2020-04-29 00:00:01",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880892333161588089305309.m3u8",
+    "videoid": "33997222115880892333161588089305309"
+  },
+  {
+    "start_time": "2020-04-29 00:00:01",
+    "end_time": "2020-04-29 00:36:01",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880896012941588089673301.m3u8",
+    "videoid": "33997222115880896012941588089673301"
+  },
+  {
+    "start_time": "2020-04-29 00:36:01",
+    "end_time": "2020-04-29 01:12:01",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880917613181588091833337.m3u8",
+    "videoid": "33997222115880917613181588091833337"
+  },
+  {
+    "start_time": "2020-04-29 01:12:01",
+    "end_time": "2020-04-29 01:48:01",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880939213761588093993393.m3u8",
+    "videoid": "33997222115880939213761588093993393"
+  },
+  {
+    "start_time": "2020-04-29 01:48:01",
+    "end_time": "2020-04-29 01:58:49",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880960814231588096153413.m3u8",
+    "videoid": "33997222115880960814231588096153413"
+  },
+  {
+    "start_time": "2020-04-29 02:00:33",
+    "end_time": "2020-04-29 02:36:33",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880968334911588096905564.m3u8",
+    "videoid": "33997222115880968334911588096905564"
+  },
+  {
+    "start_time": "2020-04-29 02:36:33",
+    "end_time": "2020-04-29 03:12:33",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115880989935871588099065586.m3u8",
+    "videoid": "33997222115880989935871588099065586"
+  },
+  {
+    "start_time": "2020-04-29 03:12:33",
+    "end_time": "2020-04-29 03:48:33",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115881011536061588101225606.m3u8",
+    "videoid": "33997222115881011536061588101225606"
+  },
+  {
+    "start_time": "2020-04-29 03:48:33",
+    "end_time": "2020-04-29 04:00:03",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115881033136351588103385635.m3u8",
+    "videoid": "33997222115881033136351588103385635"
+  },
+  {
+    "start_time": "2020-04-29 08:51:34",
+    "end_time": "2020-04-29 09:27:33",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115881214946061588121566566.m3u8",
+    "videoid": "33997222115881214946061588121566566"
+  },
+  {
+    "start_time": "2020-04-29 09:27:33",
+    "end_time": "2020-04-29 09:46:40",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115881236535751588123725590.m3u8",
+    "videoid": "33997222115881236535751588123725590"
+  },
+  {
+    "start_time": "2020-04-29 09:57:22",
+    "end_time": "2020-04-29 10:04:32",
+    "hls_url": "http://v-test-ali-http-play-gl.cmcconenet.com:8000/vod/33710/33997222_1/33997222115881254420231588125514005.m3u8",
+    "videoid": "33997222115881254420231588125514005"
+  }
+]'>
+</div>
+<div class="live-input">
+    对话地址：<input id="audioInput">
+</div>
+<button id="play">播放</button>
+<script type="text/javascript" src="PlayerSDK.min.js"></script></body>
+<style>
+  .live-input{
+    margin-top: 20px;
+  }
+  .live-input input {
+    width: 500px;
+  }
+  #audio{
+    margin-top: 20px;
+  }
+</style>
+</html>
