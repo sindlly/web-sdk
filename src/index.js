@@ -137,7 +137,7 @@ document.getElementById("play").onclick = () => {
         cors: true,
         url: flvUrl,
         fluid: false,
-        socketServer: 'wss://v-dev.cmcconenet.com:18080/ws/manage/devices?token=twAPUwGU9BGw3doWEw-rAg9M1m0IrVvV6Hs8-Z0IXmB7dMxCC0qeh4rfLPg8IJ4XoTpnO9177uS9sql4HddyaRR9NLXuEtFcBBknuSoQwOX-hs3c9mk4JlILBU35graEDT6Gpixnj5YYJebRaUDnOQ0UA8vzptTKc2nNrTR5OY8'
+        socketServer: 'wss://v-dev.cmcconenet.com:18080/ws/manage/devices?token=q-esaXCnH89ZDsVkOGluxtfCYfeAOhcLZ1tdzTTiWjoVaTSeNaSiQbHKK8L1TJecmCoalIiGNKjIcpb4fXzCPBb6C5Z7vYTOQHmRmAlhM5zGOMlePeSuk6631EPvbacQ7GV79_GFgbJcp1gASRawNtx9dlzFHVLNWzPItYLmdLc'
     });
     let urlData = null
     if (document.getElementById("historyInput").value){

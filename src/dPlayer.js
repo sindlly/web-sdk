@@ -217,9 +217,9 @@ class PlayerSDK {
                 this.options.url = urlData[activeIndex].hls_url + "?token=" + token
                 this.options.isLive = false   //切换为hls
                 this.initPlayer()
-                this.Events("PLAYER_TIME_CHANGE", (e) => {
-                    console.log("PLAYER_TIME_CHANGE",e)
-                })
+                // this.Events("PLAYER_TIME_CHANGE", (e) => {
+                //     console.log("PLAYER_TIME_CHANGE",e)
+                // })
                 this.prototype.on("complete", () => {
                     this.prototype.currentTime = currentTime
                     if (end_time) {
